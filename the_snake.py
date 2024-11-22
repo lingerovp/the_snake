@@ -94,8 +94,8 @@ class Snake(GameObject):
         self.last = self.positions[-1]
         self.positions.insert(
             0,
-            ((head_position_x + GRID_SIZE * self.direction[0]) % 640,
-             (head_position_y + GRID_SIZE * self.direction[1]) % 480
+            ((head_position_x + GRID_SIZE * self.direction[0]) % SCREEN_WIDTH,
+             (head_position_y + GRID_SIZE * self.direction[1]) % SCREEN_HEIGHT
              )
         )
         if self.length < len(self.positions):
@@ -121,7 +121,7 @@ class Snake(GameObject):
         screen.fill(BOARD_BACKGROUND_COLOR)
 
 
-def handle_keys(game_object, key_pressed):
+def handle_keys(game_object):
     """Метод, который обрабатывает нажатия клавиш"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -131,14 +131,14 @@ def handle_keys(game_object, key_pressed):
             if event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 raise SystemExit
-            elif not key_pressed:
+            else:
                 game_object.update_direction(
                     ACTIONS.get(
                         (event.key, game_object.direction),
                         game_object.direction
                     )
                 )
-                key_pressed = True
+                break
 
 
 def main():
@@ -147,10 +147,6 @@ def main():
     snake = Snake()
     apple = Apple()
     apple.randomize_position(snake.positions)
-    # Добавил флаг для функции hanld_keys,
-    # чтобы не было быстрых двух нажатий,
-    # иначе змейка может повернуться назад
-    key_pressed = False
 
     while True:
         global SPEED
@@ -166,7 +162,7 @@ def main():
             snake.reset()
             apple.randomize_position(snake.positions)
         snake.move()
-        handle_keys(snake, key_pressed)
+        handle_keys(snake)
         pygame.display.update()
 
 
